@@ -196,9 +196,27 @@
 
       const textWidth = doc.getTextWidth(userText);
 
+      const textX = 20;
+      const rightMargin = 20;
+      const maxTextWidth = pageWidth - textX - rightMargin;
+
+      const maxFontSize = 80;
+      const minFontSize = 35;
+
+      let fontSize = maxFontSize;
+      doc.setFontSize(fontSize);
+
+      while (
+        doc.getTextWidth(userText) > maxTextWidth &&
+        fontSize > minFontSize
+      ) {
+        fontSize -= 1;
+        doc.setFontSize(fontSize);
+      }
+
       doc.text(
         userText,
-        20,
+        textX,
         40,
         { baseline: "middle" }
       );
@@ -244,5 +262,4 @@
     }	
   </script>
 </body>
-
 </html>
