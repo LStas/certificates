@@ -104,7 +104,11 @@
     <form>
       <input type="text" placeholder="Введите Фамилию, Имя, Отчество" required id="input-text">
       <input type="hidden" id="lang" value="kz">
-      <button class="button" type="button" value="Скачать" id="make">Скачать</button>
+      <div class="certificate-actions">
+        <button class="button" type="button" id="make">Жүктеу PDF</button>
+        <button class="button button-secondary" type="button" id="download-png">Жүктеу PNG</button>
+        <button class="button button-secondary" type="button" id="share-certificate">Бөлісу</button>
+      </div>
     </form>
   </div>
 
@@ -115,6 +119,13 @@
     const formText = document.getElementById('form-text');
     const inputText = document.getElementById('input-text');
     const submitBtn = document.getElementById('make');
+    const pngBtn = document.getElementById('download-png');
+    const shareBtn = document.getElementById('share-certificate');
+    const buttonLabels = {
+      kz: { pdf: 'Жүктеу PDF', png: 'Жүктеу PNG', share: 'Бөлісу' },
+      ru: { pdf: 'Скачать PDF', png: 'Скачать PNG', share: 'Поделиться' },
+      kg: { pdf: 'Жүктөп алуу PDF', png: 'Жүктөп алуу PNG', share: 'Бөлүшүү' }
+    };
 
     function setLanguage(lang) {
       langInput.value = lang;
@@ -125,16 +136,20 @@
       if (lang === 'ru') {
         document.documentElement.lang = 'ru';
         inputText.placeholder = "Введите Фамилию, Имя, Отчество";
-        submitBtn.innerHTML = "Скачать";
+
       } else if (lang === 'kz') {
         document.documentElement.lang = 'kk';
         inputText.placeholder = "Тегіңіз бен аты-жөніңізді енгізіңіз";
-        submitBtn.innerHTML = "Жүктеу";
+
       } else if (lang === 'kg') {
         document.documentElement.lang = 'ky';
         inputText.placeholder = "Фамилияңызды, атыңызды, атаңыздын атыңызды киргизиңиз";
-        submitBtn.innerHTML = "Жүктөп алуу";
+
       }
+
+      submitBtn.textContent = buttonLabels[lang].pdf;
+      pngBtn.textContent = buttonLabels[lang].png;
+      shareBtn.textContent = buttonLabels[lang].share;
 
       langButtons.forEach(button => {
         const isActive = button.dataset.lang === lang;
@@ -149,117 +164,195 @@
     setLanguage(langInput.value);
   </script>
   <script>
-    document.getElementById("make").addEventListener("click", async () => {
-      const { jsPDF } = window.jspdf;
-      const lang = document.getElementById("lang").value;
-      const userText = document.getElementById("input-text").value.trim();
+    const backgrounds = {
+      kz: "Cetificates/kz.png",
+      ru: "Cetificates/ru.png",
+      kg: "Cetificates/kg.png"
+    };
+    const messages = {
+      kz: { empty: "ТАӘ енгізіңіз!", error: "Сертификатты жасау мүмкін болмады.", unsupported: "Бұл браузер файлды бөлісуді қолдамайды. PNG файлын жүктеңіз." },
+      ru: { empty: "Введите ФИО!", error: "Не удалось создать сертификат.", unsupported: "Ваш браузер не поддерживает отправку файла. Скачайте PNG." },
+      kg: { empty: "ФАА киргизиңиз!", error: "Тастыктаманы түзүү мүмкүн болгон жок.", unsupported: "Браузериңиз файл бөлүшүүнү колдобойт. PNG жүктөп алыңыз." }
+    };
 
-      if (!userText) {
-        const messages = {
-          ru: "Введите ФИО!",
-          kz: "ТАӘ енгізіңіз!",
-          kg: "ФАА киргизиңиз!"
-        };
+    // Координаты сохраняют расположение ФИО из исходной PDF-версии (мм, A4 landscape).
+    const pageWidthMM = 297;
+    const pageHeightMM = 210;
+    const textXMM = 20;
+    const textYMM = 40;
+    const rightMarginMM = 20;
+    const maxFontSizePT = 80;
+    const minFontSizePT = 35;
+    const fontUrl = "Fonts/NotoSans-Regular.ttf";
+    let fontBufferPromise;
+    let busy = false;
 
-        alert(messages[lang]);
-        return;
+    function currentDetails() {
+      const lang = langInput.value;
+      const name = inputText.value.trim().replace(/\s+/g, " ");
+      if (!name) {
+        alert(messages[lang].empty);
+        inputText.focus();
+        return null;
       }
+      return { lang, name };
+    }
 
-      // Ссылки на картинки для разных языков
-      const backgrounds = {
-        kz: "Cetificates/kz.png",
-        ru: "Cetificates/ru.png",
-        kg: "Cetificates/kg.png"
-      };
-
-      const bgUrl = backgrounds[lang];
-
-      // Создаём документ A4, альбомная ориентация
-      const doc = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4"
-      });
-
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-
-      // Загружаем выбранную картинку
-      const img = await loadImage(bgUrl);
-
-      doc.addImage(img, "JPEG", 0, 0, pageWidth, pageHeight);
-      await loadFontFromUrl(doc, "Fonts/NotoSans-Regular.ttf", "CustomFont");
-      //await loadFontFromUrl(doc, "Fonts/MaryKayScriptCyrillicReg.otf", "CustomFont");
-      // Текст по центру
-      doc.setFontSize(80);
-      doc.setTextColor(255, 255, 255);
-
-      const textWidth = doc.getTextWidth(userText);
-
-      const textX = 20;
-      const rightMargin = 20;
-      const maxTextWidth = pageWidth - textX - rightMargin;
-
-      const maxFontSize = 80;
-      const minFontSize = 35;
-
-      let fontSize = maxFontSize;
-      doc.setFontSize(fontSize);
-
-      while (
-        doc.getTextWidth(userText) > maxTextWidth &&
-        fontSize > minFontSize
-      ) {
-        fontSize -= 1;
-        doc.setFontSize(fontSize);
+    async function getFontBuffer() {
+      if (!fontBufferPromise) {
+        fontBufferPromise = fetch(fontUrl).then(response => {
+          if (!response.ok) throw new Error("Font load failed");
+          return response.arrayBuffer();
+        }).catch(error => { fontBufferPromise = null; throw error; });
       }
-
-      doc.text(
-        userText,
-        textX,
-        40,
-        { baseline: "middle" }
-      );
-
-      doc.save(`Power_of_One_cert.pdf`);
-    });
-
-    function loadImage(url) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL("image/jpeg"));
-        };
-        img.onerror = reject;
-        img.src = url;
-      });
+      return fontBufferPromise;
     }
 
     function arrayBufferToBase64(buffer) {
-      let binary = '';
       const bytes = new Uint8Array(buffer);
-      const len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
       }
       return btoa(binary);
     }
 
-    // Загрузка шрифта по URL
-    async function loadFontFromUrl(doc, url, fontName) {
-      const res = await fetch(url);
-      const fontBuffer = await res.arrayBuffer();
-      const fontBase64 = arrayBufferToBase64(fontBuffer);
-      doc.addFileToVFS(`${fontName}.ttf`, fontBase64);
-      doc.addFont(`${fontName}.ttf`, fontName, "normal");
-      doc.setFont(fontName, "normal");
-    }	
+    async function loadBackground(lang) {
+      const image = new Image();
+      image.src = backgrounds[lang];
+      await image.decode();
+      return image;
+    }
+
+    async function loadCanvasFont() {
+      const buffer = await getFontBuffer();
+      if (!document.fonts.check('16px "CertificateNoto"')) {
+        const face = new FontFace("CertificateNoto", buffer);
+        await face.load();
+        document.fonts.add(face);
+      }
+    }
+
+    function fitFontSize(measure, name) {
+      const maxWidth = pageWidthMM - textXMM - rightMarginMM;
+      let size = maxFontSizePT;
+      while (size > minFontSizePT && measure(name, size) > maxWidth) size--;
+      if (measure(name, size) > maxWidth) {
+        // Не обрезаем даже исключительно длинные имена.
+        size = Math.max(1, size * maxWidth / measure(name, size));
+      }
+      return size;
+    }
+
+    async function buildPNG(name, lang) {
+      const [image] = await Promise.all([loadBackground(lang), loadCanvasFont()]);
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0);
+
+      const pixelsPerMM = canvas.width / pageWidthMM;
+      const fontPixelsPerPoint = pixelsPerMM * 25.4 / 72;
+      const measure = (text, size) => {
+        ctx.font = `${size * fontPixelsPerPoint}px CertificateNoto`;
+        return ctx.measureText(text).width / pixelsPerMM;
+      };
+      const fontSize = fitFontSize(measure, name);
+      ctx.font = `${fontSize * fontPixelsPerPoint}px CertificateNoto`;
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(name, textXMM * pixelsPerMM, textYMM * (canvas.height / pageHeightMM));
+      return canvas;
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("PNG creation failed")), "image/png");
+      });
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+
+    async function buildPDF(name, lang) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+      const [image, fontBuffer] = await Promise.all([loadBackground(lang), getFontBuffer()]);
+      const backgroundCanvas = document.createElement("canvas");
+      backgroundCanvas.width = image.naturalWidth;
+      backgroundCanvas.height = image.naturalHeight;
+      backgroundCanvas.getContext("2d").drawImage(image, 0, 0);
+      doc.addImage(backgroundCanvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, pageWidthMM, pageHeightMM);
+      doc.addFileToVFS("CertificateNoto.ttf", arrayBufferToBase64(fontBuffer));
+      doc.addFont("CertificateNoto.ttf", "CertificateNoto", "normal");
+      doc.setFont("CertificateNoto", "normal");
+      doc.setTextColor(255, 255, 255);
+      const fontSize = fitFontSize((text, size) => {
+        doc.setFontSize(size);
+        return doc.getTextWidth(text);
+      }, name);
+      doc.setFontSize(fontSize);
+      doc.text(name, textXMM, textYMM, { baseline: "middle" });
+      return doc;
+    }
+
+    async function runAction(action) {
+      if (busy) return;
+      const details = currentDetails();
+      if (!details) return;
+      busy = true;
+      const buttons = [submitBtn, pngBtn, shareBtn];
+      buttons.forEach(button => button.disabled = true);
+      try {
+        if (action === "pdf") {
+          const doc = await buildPDF(details.name, details.lang);
+          doc.save("Power_of_One_cert.pdf");
+        } else {
+          const canvas = await buildPNG(details.name, details.lang);
+          const blob = await canvasToBlob(canvas);
+          const filename = "Power_of_One_cert.png";
+          if (action === "png") {
+            downloadBlob(blob, filename);
+          } else {
+            const file = new File([blob], filename, { type: "image/png" });
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({ files: [file], title: "Power of One" });
+              } catch (error) {
+                if (error.name !== "AbortError") throw error;
+              }
+            } else {
+              alert(messages[details.lang].unsupported);
+              downloadBlob(blob, filename);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Certificate generation failed:", error);
+        alert(messages[details.lang].error);
+      } finally {
+        busy = false;
+        buttons.forEach(button => button.disabled = false);
+      }
+    }
+
+    submitBtn.addEventListener("click", () => runAction("pdf"));
+    pngBtn.addEventListener("click", () => runAction("png"));
+    shareBtn.addEventListener("click", () => runAction("share"));
+    document.querySelector(".form-container form").addEventListener("submit", event => {
+      event.preventDefault();
+      runAction("pdf");
+    });
   </script>
 </body>
 </html>

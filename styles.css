@@ -232,3 +232,37 @@ form {
     border-radius: 14px;
   }
 }
+
+/* Действия с сертификатом: PDF, PNG, Поделиться */
+.certificate-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.certificate-actions .button {
+  margin-top: 0;
+  min-width: 0;
+}
+.certificate-actions #share-certificate {
+  grid-column: 1 / -1;
+}
+.button-secondary {
+  background: #ffffff;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  box-shadow: none;
+}
+.button-secondary:hover {
+  background: #fcebf2;
+  color: var(--primary-hover);
+  box-shadow: none;
+}
+.button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+@media (max-width: 480px) {
+  .certificate-actions { grid-template-columns: 1fr; }
+  .certificate-actions #share-certificate { grid-column: auto; }
+}
