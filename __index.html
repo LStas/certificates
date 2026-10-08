@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Скачать сертификат</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+  <div class="form-container">
+    <div class="language-switcher" aria-label="Выбор языка">
+      <button type="button" class="lang-button active" data-lang="kz" aria-pressed="true">ҚАЗ</button>      
+      <button type="button" class="lang-button" data-lang="ru" aria-pressed="false">РУС</button>
+      <button type="button" class="lang-button" data-lang="kg" aria-pressed="false">КЫР</button>
+    </div>
+
+    <img src="Images/logop.png">
+
+    <!-- основные блоки -->
+    <h2 id="form-title">Поздравляем вас с участием в вызове Power of One 🌸</h2>
+    <p id="form-text">Вы сделали больше, чем просто шаг — вы стали началом.<br>
+      Началом новых возможностей, историй и пути для еще одной женщины.<br>
+      Вы проявили активность, пригласили, поверили — именно так рождаются настоящий букет возможностей Mary Kay💐<br>
+      Каждая из вас важна.<br>
+      Чтобы получить <strong>именной сертификат:<br>
+        1. Укажите ФИО (фамилия, имя, отчество). <br>
+        2. Выберите язык сертификата. <br>
+        3. Нажмите кнопку «Скачать». </strong><br>
+      Ваш сертификат — это не только подтверждение участия, но и символ вашего вклада в развитие динамичного
+      бизнес-сообщества.<br>
+      Спасибо, что были с нами. Будем рады видеть вас в следующих вызовах Компании.<br><br>
+      С уважением,<br>
+      «Мэри Кэй (Казахстан)»
+    </p>
+
+    <!-- скрытые тексты -->
+    <div id="lang-ru" class="hidden-text">
+      <h2>Поздравляем вас с участием в вызове Power of One 🌸</h2>
+      <p>Вы сделали больше, чем просто шаг — вы стали началом.<br>
+        Началом новых возможностей, историй и пути для еще одной женщины.<br>
+        Вы проявили активность, пригласили, поверили — именно так рождаются настоящий букет возможностей Mary Kay💐<br>
+        Каждая из вас важна.<br><br>
+        Чтобы получить <strong>именной сертификат:<br>
+          1. Укажите ФИО (фамилия, имя, отчество). <br>
+          2. Выберите язык сертификата. <br>
+          3. Нажмите кнопку «Скачать». </strong><br><br>
+        Ваш сертификат — это не только подтверждение участия, но и символ вашего вклада в развитие динамичного
+        бизнес-сообщества.<br>
+        Спасибо, что были с нами. Будем рады видеть вас в следующих вызовах Компании.<br><br>
+        С уважением,<br>
+        «Мэри Кэй (Казахстан)»
+      </p>
+    </div>
+
+    <div id="lang-kz" class="hidden-text">
+      <h2>Сізді Power of One үндеуіне қатысқаныңызбен құттықтаймыз 🌸</h2>
+      <p>Сіз тек қадам жасаған жоқсыз – сіз жаңа бастаманың өзіне айналдыңыз.<br>
+        Жаңа мүмкідіктерге, тарихтарға және тағы бір әйелдің жолына шабыт бердіңіз.<br>
+        Сіз белсенділік таныттыңыз, шақырдыңыз, сендіңіз – дәл осылай Mary Kay мүмкіндіктерінің гүлшоғы пайда
+        болды💐<br>
+        Әрқайсыңыз біз үшін маңыздысыз.<br><br>
+        <strong>
+          1. ТАӘ (тегі, аты, әкесінің аты) көрсетіңіз<br>
+          2. Сертификат тілін таңдаңыз<br>
+          3. «Жүктеу» батырмасын басыңыз.<br><br>
+        </strong>
+        Сіздің сертификатыңыз – қатысқаныңызды растайтын ғана емес, сонымен қатар динамикалық бизнес-қауымдастықтың
+        дамуына қосқан үлесіңіздің символы.<br>
+        Бізбен бірге болғаныңызға рахмет. Компанияның келесі үндеулерінде сізді қайта көруге қуаныштымыз.<br><br>
+        Құрметпен<br>
+        «Мэри Кэй (Қазақстан)»
+
+      </p>
+    </div>
+
+    <div id="lang-kg" class="hidden-text">
+      <h2>Сизди Power of One чакыруусуна катышууңуз менен куттуктайбыз🌸</h2>
+      <p>Сиз жѳнѳкѳй кадамга караганда кѳп нерсе жасадыңыз — сиз башталышы болуп калдыңыз.<br>
+
+        Дагы бир аял үчүн жаңы мүмкүнчүлүктѳрдүн, тарыхтардын жана сапардын башталышы.<br>
+        Сиз активдүүлүктү кѳрсѳттүңүз, чакырдыңыз, ишендиңиз – Mary Kayдин мүмкүнчүлүктѳрүнүн чыныгы дестеси дал ушинтип
+        туулат💐<br><br>
+        <strong>
+          1. Сиздердин ар бириңиздер маанилүүсүздѳр.<br>
+          2. Аталган тастыктама алуу үчүн:<br>
+          3. ФАА (фамилияңызды, атыңызды, атаңыздын атын) кѳрсѳтүңүз.<br><br>
+        </strong>
+        Тастыктаманын тилин тандаңыз.<br>
+        «Сууруп алуу» баскычын басыңыз.<br>
+        <br>
+        Сиздин тастыктамаңыз – бул катышууну тастыктоо гана эмес, ал эми динамикалуу бизнес-жамааттарды ѳнүктүрүүгѳ
+        сиздин салымыңыздын символу дагы.<br>
+        Биз менен болгонуңуз үчүн ыракмат. Сизди Компаниянын киийнки чакырууларында кѳргѳнүбүзгѳ кубанычта болобуз.<br><br>
+        Урматтоо менен,<br>
+        «Мэри Кэй (Казакстан)»
+      </p>
+    </div>
+
+    <form>
+      <input type="text" placeholder="Введите Фамилию, Имя, Отчество" required id="input-text">
+      <input type="hidden" id="lang" value="kz">
+      <button class="button" type="button" value="Скачать" id="make">Скачать</button>
+    </form>
+  </div>
+
+  <script>
+    const langInput = document.getElementById('lang');
+    const langButtons = document.querySelectorAll('.lang-button');
+    const formTitle = document.getElementById('form-title');
+    const formText = document.getElementById('form-text');
+    const inputText = document.getElementById('input-text');
+    const submitBtn = document.getElementById('make');
+
+    function setLanguage(lang) {
+      langInput.value = lang;
+
+      formTitle.innerHTML = document.querySelector(`#lang-${lang} h2`).innerHTML;
+      formText.innerHTML = document.querySelector(`#lang-${lang} p`).innerHTML;
+
+      if (lang === 'ru') {
+        document.documentElement.lang = 'ru';
+        inputText.placeholder = "Введите Фамилию, Имя, Отчество";
+        submitBtn.innerHTML = "Скачать";
+      } else if (lang === 'kz') {
+        document.documentElement.lang = 'kk';
+        inputText.placeholder = "Тегіңіз бен аты-жөніңізді енгізіңіз";
+        submitBtn.innerHTML = "Жүктеу";
+      } else if (lang === 'kg') {
+        document.documentElement.lang = 'ky';
+        inputText.placeholder = "Фамилияңызды, атыңызды, атаңыздын атыңызды киргизиңиз";
+        submitBtn.innerHTML = "Жүктөп алуу";
+      }
+
+      langButtons.forEach(button => {
+        const isActive = button.dataset.lang === lang;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    }
+
+    langButtons.forEach(button => {
+      button.addEventListener('click', () => setLanguage(button.dataset.lang));
+    });
+    setLanguage(langInput.value);
+  </script>
+  <script>
+    document.getElementById("make").addEventListener("click", async () => {
+      const { jsPDF } = window.jspdf;
+      const lang = document.getElementById("lang").value;
+      const userText = document.getElementById("input-text").value.trim();
+
+      if (!userText) {
+        const messages = {
+          ru: "Введите ФИО!",
+          kz: "ТАӘ енгізіңіз!",
+          kg: "ФАА киргизиңиз!"
+        };
+
+        alert(messages[lang]);
+        return;
+      }
+
+      // Ссылки на картинки для разных языков
+      const backgrounds = {
+        kz: "Cetificates/kz.png",
+        ru: "Cetificates/ru.png",
+        kg: "Cetificates/kg.png"
+      };
+
+      const bgUrl = backgrounds[lang];
+
+      // Создаём документ A4, альбомная ориентация
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4"
+      });
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      // Загружаем выбранную картинку
+      const img = await loadImage(bgUrl);
+
+      doc.addImage(img, "JPEG", 0, 0, pageWidth, pageHeight);
+      await loadFontFromUrl(doc, "Fonts/NotoSans-Regular.ttf", "CustomFont");
+      //await loadFontFromUrl(doc, "Fonts/MaryKayScriptCyrillicReg.otf", "CustomFont");
+      // Текст по центру
+      doc.setFontSize(80);
+      doc.setTextColor(255, 255, 255);
+
+      const textWidth = doc.getTextWidth(userText);
+
+      const textX = 20;
+      const rightMargin = 20;
+      const maxTextWidth = pageWidth - textX - rightMargin;
+
+      const maxFontSize = 80;
+      const minFontSize = 35;
+
+      let fontSize = maxFontSize;
+      doc.setFontSize(fontSize);
+
+      while (
+        doc.getTextWidth(userText) > maxTextWidth &&
+        fontSize > minFontSize
+      ) {
+        fontSize -= 1;
+        doc.setFontSize(fontSize);
+      }
+
+      doc.text(
+        userText,
+        textX,
+        40,
+        { baseline: "middle" }
+      );
+
+      doc.save(`Power_of_One_cert.pdf`);
+    });
+
+    function loadImage(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL("image/jpeg"));
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    function arrayBufferToBase64(buffer) {
+      let binary = '';
+      const bytes = new Uint8Array(buffer);
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
+    // Загрузка шрифта по URL
+    async function loadFontFromUrl(doc, url, fontName) {
+      const res = await fetch(url);
+      const fontBuffer = await res.arrayBuffer();
+      const fontBase64 = arrayBufferToBase64(fontBuffer);
+      doc.addFileToVFS(`${fontName}.ttf`, fontBase64);
+      doc.addFont(`${fontName}.ttf`, fontName, "normal");
+      doc.setFont(fontName, "normal");
+    }	
+  </script>
+</body>
+</html>
