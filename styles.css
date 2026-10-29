@@ -7,15 +7,15 @@
 }
 
 :root {
-  --background: #f8f5f6;
+  --background: #fff8fa;
   --surface: #ffffff;
-  --surface-soft: #fcfafb;
-  --primary: #c73572;
-  --primary-hover: #a92b5f;
-  --text: #302a2d;
-  --muted: #71686c;
-  --border: #e8dce1;
-  --focus: rgba(199, 53, 114, 0.12);
+  --surface-soft: #fff0f5;
+  --primary: #d50920;
+  --primary-hover: #af081b;
+  --text: #271c22;
+  --muted: #77646b;
+  --border: #f1cbd9;
+  --focus: rgba(213, 9, 32, 0.14);
   --shadow: 0 18px 55px rgba(64, 38, 49, 0.10);
 }
 
@@ -30,8 +30,8 @@ body {
   font-family: "Noto Sans", "Noto Sans Local", Arial, sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 12% 8%, rgba(199, 53, 114, 0.08), transparent 30%),
-    radial-gradient(circle at 88% 92%, rgba(199, 53, 114, 0.06), transparent 32%),
+    radial-gradient(circle at 12% 8%, rgba(213, 9, 32, 0.065), transparent 30%),
+    radial-gradient(circle at 88% 92%, rgba(236, 102, 139, 0.10), transparent 32%),
     var(--background);
   display: flex;
   justify-content: center;
@@ -76,7 +76,7 @@ body {
 
 .lang-button:hover {
   color: var(--primary);
-  border-color: rgba(199, 53, 114, 0.45);
+  border-color: rgba(213, 9, 32, 0.45);
 }
 
 .lang-button.active {
@@ -168,14 +168,14 @@ form {
   font-size: 17px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(199, 53, 114, 0.20);
+  box-shadow: 0 8px 20px rgba(213, 9, 32, 0.18);
   transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .button:hover {
   background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(199, 53, 114, 0.25);
+  box-shadow: 0 10px 24px rgba(213, 9, 32, 0.24);
 }
 
 .button:active {
@@ -183,7 +183,7 @@ form {
 }
 
 .button:focus-visible {
-  outline: 3px solid rgba(199, 53, 114, 0.22);
+  outline: 3px solid rgba(213, 9, 32, 0.22);
   outline-offset: 3px;
 }
 
@@ -253,7 +253,7 @@ form {
   box-shadow: none;
 }
 .button-secondary:hover {
-  background: #fcebf2;
+  background: #ffe4eb;
   color: var(--primary-hover);
   box-shadow: none;
 }
@@ -265,4 +265,45 @@ form {
 @media (max-width: 480px) {
   .certificate-actions { grid-template-columns: 1fr; }
   .certificate-actions #share-certificate { grid-column: auto; }
+}
+
+/* BeautyShared certificate theme */
+.form-container { position: relative; overflow: hidden; }
+.form-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #d50920, #e94c64, #f6b9cb); }
+.form-container h2 { font-weight: 800; }
+.form-container form { background: linear-gradient(135deg, #fff2f6, #fff9fb); }
+.form-container input[type="text"]:disabled { opacity: .65; cursor: not-allowed; }
+.availability-message { margin: 16px 0 0 !important; padding: 12px 14px; border: 1px solid #f1cbd9; border-radius: 10px; background: #ffe9ef; color: #a30a22 !important; font-size: 15px !important; line-height: 1.5 !important; text-align: center !important; }
+.availability-message[hidden] { display: none !important; }
+.button:disabled { cursor: not-allowed; }
+
+/* Переключатель доступности сайта: config.js -> is_active */
+.maintenance-screen { display: none; }
+.site-inactive .form-container { display: none !important; }
+.site-inactive body { align-items: center; }
+.site-inactive .maintenance-screen {
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - 96px);
+  justify-content: center;
+  align-items: center;
+}
+.maintenance-card {
+  width: min(100%, 640px);
+  padding: 52px 44px;
+  background: #ffffff;
+  border: 1px solid #f1cbd9;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.maintenance-logo { display: block; width: min(78%, 360px); height: auto; margin: 0 auto 28px; }
+.maintenance-rule { width: 84px; height: 4px; background: #d50920; border-radius: 4px; margin: 0 auto 25px; }
+.maintenance-card h1 { color: #d50920; font-size: clamp(23px, 4vw, 32px); line-height: 1.3; margin: 0 0 14px; }
+.maintenance-card h2 {color: #d50920; font-size: clamp(20px, 3vw, 26px); line-height: 1.3; margin: 0 0 14px; }
+.maintenance-divider {border: none; border-top: 1px solid #f1cbd9; margin: 24px 0;}
+.maintenance-card p { color: #77646b; font-size: 16px; line-height: 1.6; margin: 0; }
+@media (max-width: 640px) {
+  .site-inactive .maintenance-screen { min-height: calc(100vh - 36px); }
+  .maintenance-card { padding: 36px 22px; border-radius: 18px; }
 }
