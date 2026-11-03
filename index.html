@@ -4,349 +4,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title></title>
+  <meta name="description"
+      content="Генерация именных сертификатов для участников мероприятий Mary Kay. Для получения сертификата используйте ссылку, предоставленную организатором.">
+  <title>Генерация сертификатов</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="config.js"></script>
-  <script>
-    // По умолчанию закрыто, если config.js не загрузился или значение некорректно.
-    const certificateIsActive = typeof certificateConfig !== "undefined" &&
-      (certificateConfig.is_active === true || certificateConfig.is_active === 1);
-    document.documentElement.classList.add(certificateIsActive ? "site-active" : "site-inactive");
-    if (!certificateIsActive) document.title = "Генерация сертификата недоступна";
-  </script>  
 </head>
 
 <body>
-  <main class="maintenance-screen" role="status" aria-live="polite">
-    <div class="maintenance-card">
-      <img src="Images/logor.png" alt="Mary Kay" class="maintenance-logo">
-      <div class="maintenance-rule"></div>
-        <h1>Сертификатты генерациялау қазір қолжетімсіз.</h1>
-
-        <hr class="maintenance-divider">
-        
-        <h1>Генерация сертификата сейчас недоступна.</h1>
-
-        <hr class="maintenance-divider">
-
-        <h1>Сертификат түзүү учурда жеткиликтүү эмес.</h1>
-    </div>
-  </main>
-
-  <div class="form-container">
-    <div class="language-switcher" aria-label="">
-      <button type="button" class="lang-button active" data-lang="kz" aria-pressed="true">ҚАЗ</button>      
-      <button type="button" class="lang-button" data-lang="ru" aria-pressed="false">РУС</button>
-      <button type="button" class="lang-button" data-lang="kg" aria-pressed="false">КЫР</button>
-    </div>
-
-    <img src="Images/logor.png">
-
-    <!-- Текст страницы подставляется из translations.js -->
-    <h2 id="form-title"></h2>
-    <p id="form-text"></p>
-
-    <form>
-      <input type="text" placeholder="" required id="input-text">
-      <input type="hidden" id="lang" value="kz">
-      <div class="certificate-actions">
-        <button class="button" type="button" id="make"></button>
-        <button class="button" type="button" id="download-png"></button>
-        <button class="button button-secondary" type="button" id="share-certificate"></button>
-      </div>
-    </form>
+  <div class="maintenance-card">
+    <img src="Images/logor.png" alt="Mary Kay" class="maintenance-logo">
+    <div class="maintenance-rule"></div>
+    <section lang="kk">
+      <h1>Сертификаттарды жасау</h1>
+      <p>
+        Сертификат алу үшін іс-шара ұйымдастырушысы
+        ұсынған сілтеме арқылы өтіңіз.
+      </p>
+    </section>
+    <hr class="maintenance-divider">
+    <section lang="ru">
+      <h1>Генерация сертификатов</h1>
+      <p>
+        Для получения сертификата перейдите по ссылке,
+        предоставленной организатором мероприятия.
+      </p>
+    </section>
+    <hr class="maintenance-divider">
+    <section lang="ky">
+      <h1>Сертификаттарды түзүү</h1>
+      <p>
+        Сертификат алуу үчүн иш-чаранын уюштуруучусу
+        берген шилтеме аркылуу өтүңүз.
+      </p>
+    </section>
   </div>
-
-  <script src="translations.js"></script>
-  <script>
-    const langInput = document.getElementById('lang');
-    const langButtons = document.querySelectorAll('.lang-button');
-    const formTitle = document.getElementById('form-title');
-    const formText = document.getElementById('form-text');
-    const inputText = document.getElementById('input-text');
-    const submitBtn = document.getElementById('make');
-    const pngBtn = document.getElementById('download-png');
-    const shareBtn = document.getElementById('share-certificate');
-    function setLanguage(lang) {
-      const t = translations[lang];
-      if (!t) return;
-      langInput.value = lang;
-      document.documentElement.lang = t.htmlLang;
-      if (certificateIsActive) document.title = t.pageTitle;
-      document.querySelector('.language-switcher').setAttribute('aria-label', t.languageSwitcherLabel);
-      formTitle.innerHTML = t.title;
-      formText.innerHTML = t.description;
-      inputText.placeholder = t.placeholder;
-      submitBtn.textContent = t.buttons.pdf;
-      pngBtn.textContent = t.buttons.png;
-      shareBtn.textContent = t.buttons.share;
-
-      langButtons.forEach(button => {
-        const isActive = button.dataset.lang === lang;
-        button.classList.toggle('active', isActive);
-        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-      });
-    }
-
-    langButtons.forEach(button => {
-      button.addEventListener('click', () => setLanguage(button.dataset.lang));
-    });
-    setLanguage(langInput.value);
-  </script>
-  <script>
-    const backgrounds = {
-      pdf: {
-        kz: "Cetificates/kz.png",
-        ru: "Cetificates/ru.png",
-        kg: "Cetificates/kg.png"
-      },
-      square: {
-        kz: "Cetificates/kz-square.png",
-        ru: "Cetificates/ru-square.png",
-        kg: "Cetificates/kg-square.png"
-      }
-    };
-    const messages = Object.fromEntries(
-      Object.entries(translations).map(([lang, t]) => [lang, t.messages])
-    );
-
-    const fontUrl = "Fonts/NotoSans-Bold.ttf";
-    let fontBufferPromise;
-    let canvasFontPromise;
-    let busy = false;
-
-    function currentDetails() {
-      const lang = langInput.value;
-      const name = inputText.value.trim().replace(/\s+/g, " ");
-      if (!name) {
-        alert(messages[lang].empty);
-        inputText.focus();
-        return null;
-      }
-      return { lang, name };
-    }
-
-    async function getFontBuffer() {
-      if (!fontBufferPromise) {
-        fontBufferPromise = fetch(fontUrl).then(response => {
-          if (!response.ok) throw new Error("Font load failed");
-          return response.arrayBuffer();
-        }).catch(error => { fontBufferPromise = null; throw error; });
-      }
-      return fontBufferPromise;
-    }
-
-    async function loadBackground(lang, format = "pdf") {
-      const image = new Image();
-      image.src = backgrounds[format][lang];
-      await image.decode();
-      return image;
-    }
-
-    async function loadCanvasFont() {
-      if (!canvasFontPromise) {
-        canvasFontPromise = (async () => {
-          const buffer = await getFontBuffer();
-          const face = new FontFace("CertificateNoto", buffer, {
-            style: "normal",
-            weight: "400"
-          });
-          await face.load();
-          document.fonts.add(face);
-          // Дожидаемся готовности шрифта для отрисовки в Canvas.
-          await document.fonts.load('16px "CertificateNoto"');
-          if (face.status !== "loaded") {
-            throw new Error("CertificateNoto font was not loaded");
-          }
-        })().catch(error => {
-          canvasFontPromise = null;
-          throw error;
-        });
-      }
-      return canvasFontPromise;
-    }
-
-    // Независимые настройки ФИО для шаблонов PDF и PNG.
-    // left/right — отступы в долях ширины; y — позиция первой строки в долях высоты.
-    const certificateText = {
-      pdf: {
-        left: 0.24,
-        right: 0.12,
-        y: 0.41,
-        maxSize: 0.052,
-        minSize: 0.024,
-        color: "#D6101F",
-        lineHeight: 1.24,
-        maxLines: 1
-      },
-      square: { // PNG и кнопка «Поделиться»
-        left: 0.24,
-        right: 0.12,
-        y: 0.41,
-        maxSize: 0.052,
-        minSize: 0.024,
-        color: "#D6101F",
-        lineHeight: 1.24,
-        maxLines: 1
-      }
-    };
-
-    function splitNameIntoLines(name, settings) {
-      const words = name.trim().split(/\s+/);
-      const maxLines = settings.maxLines;
-      if (words.length <= maxLines) {
-        return words;
-      }
-      const lines = Array(maxLines).fill("");
-      words.forEach((word, index) => {
-        const line = Math.min(
-          maxLines - 1,
-          Math.floor(index * maxLines / words.length)
-        );
-        lines[line] += (lines[line] ? " " : "") + word;
-      });
-      return lines.filter(Boolean);
-    }
-
-    async function buildCertificateCanvas(name, lang, format) {
-      const [image] = await Promise.all([loadBackground(lang, format), loadCanvasFont()]);
-      const canvas = document.createElement("canvas");
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(image, 0, 0);
-
-      const settings = certificateText[format];
-      const width = canvas.width;
-      const lines = splitNameIntoLines(name, settings);
-      const leftX = settings.left * width;
-      const rightX = (1 - settings.right) * width;
-      const maxWidth = rightX - leftX;
-      const textCenterX = (leftX + rightX) / 2;
-      const maxSize = settings.maxSize * width;
-      let fontSize = maxSize;
-
-      // Уменьшаем шрифт до тех пор, пока самая длинная строка не поместится.
-      function fits(size) {
-        ctx.font = `${size}px "CertificateNoto"`;
-        return lines.every(line => ctx.measureText(line).width <= maxWidth);
-      }
-      while (fontSize > settings.minSize * width && !fits(fontSize)) fontSize -= 1;
-      if (!fits(fontSize)) {
-        ctx.font = `${fontSize}px "CertificateNoto"`;
-        const widest = Math.max(...lines.map(line => ctx.measureText(line).width));
-        fontSize *= maxWidth / widest;
-      }
-
-      ctx.font = `${fontSize}px "CertificateNoto"`;
-      ctx.fillStyle = settings.color;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      const lineHeight = fontSize * settings.lineHeight;
-      const startY = settings.y * canvas.height;
-      lines.forEach((line, i) => {
-        ctx.fillText(
-          line, 
-          textCenterX, 
-          startY + i * lineHeight
-        );
-      });
-      return canvas;
-    }
-
-    // PNG и «Поделиться» используют отдельный шаблон square.
-    async function buildPNG(name, lang) {
-      return buildCertificateCanvas(name, lang, "square");
-    }
-
-    function canvasToBlob(canvas) {
-      return new Promise((resolve, reject) => {
-        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("PNG creation failed")), "image/png");
-      });
-    }
-
-    function downloadBlob(blob, filename) {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
-    }
-
-    // PDF создаётся из того же Canvas, что и PNG.
-    // Это гарантирует одинаковое отображение ФИО и сохранение пропорций шаблона.
-    async function buildPDF(name, lang) {
-      const { jsPDF } = window.jspdf;
-      // PDF использует собственный шаблон kz.png / ru.png / kg.png.
-      // ФИО в обоих форматах рисуется одним механизмом Canvas.
-      const canvas = await buildCertificateCanvas(name, lang, "pdf");
-      const pageWidthMM = 210;
-      const pageHeightMM = pageWidthMM * canvas.height / canvas.width;
-      const orientation = canvas.width > canvas.height ? "landscape" : "portrait";
-      const doc = new jsPDF({
-        orientation,
-        unit: "mm",
-        format: [pageWidthMM, pageHeightMM],
-        compress: true
-      });
-      const imageData = canvas.toDataURL("image/png");
-      doc.addImage(imageData, "PNG", 0, 0, pageWidthMM, pageHeightMM);
-      return doc;
-    }
-
-    async function runAction(action) {
-      if (!certificateIsActive || busy) return;
-      const details = currentDetails();
-      if (!details) return;
-      busy = true;
-      const buttons = [submitBtn, pngBtn, shareBtn];
-      buttons.forEach(button => button.disabled = true);
-      try {
-        if (action === "pdf") {
-          const doc = await buildPDF(details.name, details.lang);
-          doc.save("MK_certificate.pdf");
-        } else {
-          const canvas = await buildPNG(details.name, details.lang);
-          const blob = await canvasToBlob(canvas);
-          const filename = "MK_certificate.png";
-          if (action === "png") {
-            downloadBlob(blob, filename);
-          } else {
-            const file = new File([blob], filename, { type: "image/png" });
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-              try {
-                await navigator.share({ files: [file], title: "Power of One" });
-              } catch (error) {
-                if (error.name !== "AbortError") throw error;
-              }
-            } else {
-              alert(messages[details.lang].unsupported);
-              downloadBlob(blob, filename);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Certificate generation failed:", error);
-        alert(messages[details.lang].error);
-      } finally {
-        busy = false;
-        buttons.forEach(button => button.disabled = false);
-      }
-    }
-
-    submitBtn.addEventListener("click", () => runAction("pdf"));
-    pngBtn.addEventListener("click", () => runAction("png"));
-    shareBtn.addEventListener("click", () => runAction("share"));
-    document.querySelector(".form-container form").addEventListener("submit", event => {
-      event.preventDefault();
-      runAction("pdf");
-    });
-  </script>
 </body>
+
 </html>
